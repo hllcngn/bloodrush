@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include <term.h>
+// prototypes
 void set_cap(const char *str, ...);
 void wine_init(void);
 void wine_end(void);
+void wine_make_room(int l);
 void wine_disp(void);
 void wine_plmov(int c);
 void blood_init(void);
@@ -13,14 +15,19 @@ void blood_clr(void);
 void blood_cumo(int y, int x);
 void blood_red(void);
 
-int roomh, roomw;
-int **room;
+// dungeon
+int roomsn;
+int ***room;
+int *roomh;
+int *roomw;
+int *rlvl;
 
+// player
 int lvl;
-int **plroom;
+int plroom;
 int ply, plx;
 
-
+// === MAIN ===
 int main(int ac, char **av){
 wine_init();
 blood_init();
@@ -37,43 +44,57 @@ case 'a':
 case 's':
 case 'd': wine_plmov(c); break;
 }
-}//while end
+}//loop end
 
 blood_end();
 wine_end();
 return 0;}
 
-
+// === WINE ===
 void wine_init(void){
-roomh = 10;
-roomw = 20;
-room = malloc(sizeof(int*)*roomh);
-for (int i = 0; i < roomh; i++){
-	room[i] = malloc(sizeof(int)*roomw+1);}
-room[0][roomw] = '\0';
-room[roomh-1][roomw] = '\0';
-for (int i = 0; i < roomw; i++){
-	room[0][i] = '-';
-	room[roomh-1][i] = '-';}
-for (int i = 1; i < roomh-1; i++){
-	room[i][0] = '|';
-	room[i][roomw-1] = '|';
-	room[i][roomw] = '\0';
-	for (int j = 1; j < roomw-1; j++)
-		room[i][j] = '.';}
-plroom = room;
+roomsn = 10;
+rlvl = malloc(sizeof(int)*roomsn);
+roomh = malloc(sizeof(int)*roomsn);
+roomw = malloc(sizeof(int)*roomsn);
+room = malloc(sizeof(int**)*roomsn);
+for (int i = 0; i < roomsn; i++)
+	wine_make_room(i);
+plroom = 0;
 ply = 5; plx = 5;}
 
 void wine_end(void){
-for (int i = 0; i < roomh; i++)
-	free(room[i]);
-free(room);}
+for (int i = 0; i < roomsn; i++){
+	for (int j = 0; j < roomh[i]; j++)
+		free(room[i][j]);
+	free(room[i]);}
+free(room);
+free(roomh); free(roomw); free(rlvl);}
+
+void wine_make_room(int l){
+rlvl[l] = 0;
+int rh = 10; int rw = 20;
+roomh[l] = rh; roomw[l] = rw;
+room[l] = malloc(sizeof(int*)*rh);
+int **new = room[l];
+for (int i = 0; i < rh; i++){
+	new[i] = malloc(sizeof(int)*rw+1);}
+new[0][rw] = '\0';
+new[rh-1][rw] = '\0';
+for (int i = 0; i < rw; i++){
+	new[0][i] = '-';
+	new[rh-1][i] = '-';}
+for (int i = 1; i < rh-1; i++){
+	new[i][0] = '|';
+	new[i][rw-1] = '|';
+	new[i][rw] = '\0';
+	for (int j = 1; j < rw-1; j++)
+		new[i][j] = '.';}}
 
 void wine_disp(void){
 blood_red();
 blood_cumo(0, 0);
-for (int i = 0; i < roomh; i++){
-	printf("%ls\n", room[i]);}
+for (int i = 0; i < roomh[plroom]; i++){
+	printf("%ls\n", room[plroom][i]);}
 blood_cumo(ply, plx);
 printf("%c\n", '@');}
 
@@ -81,11 +102,10 @@ void wine_plmov(int c){
 switch(c){
 case 'w': if (ply > 1) ply--; break;
 case 'a': if (plx > 1) plx--; break;
-case 's': if (ply < roomh-2) ply++; break;
-case 'd': if (plx < roomw-2) plx++; break;
-}}
+case 's': if (ply < roomh[plroom]-2) ply++; break;
+case 'd': if (plx < roomw[plroom]-2) plx++; break;}}
 
-
+// === BLOOD ===
 void blood_init(void){
 setupterm(NULL, 1, NULL);
 struct termios term;
@@ -108,7 +128,7 @@ void blood_clr(void){ set_cap("clear", TRUE); }
 void blood_cumo(int y, int x){ set_cap("cup", y, x); }
 void blood_red(void){ set_cap("setaf", COLOR_RED); }
 
-
+// === MISC ===
 void set_cap(const char *str, ...){
 va_list al;
 va_start(al, str);
