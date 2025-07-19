@@ -36,7 +36,7 @@ int *roomx;
 int *rlvl;
 
 // player
-int lvl;
+int pllvl;
 int plroom;
 int ply, plx;
 
@@ -90,7 +90,7 @@ free(roomh); free(roomw); free(rlvl);}
 
 void wine_make_room(int l){
 //do {
-	rlvl[l] = rand()%lvlsn;
+rlvl[l] = rand()%lvlsn;
 int rh = rand()%(RMAXH-RMINH)+RMINH;
 int rw = rand()%(RMAXW-RMINW)+RMINW;
 int ry = rand()%(LVLH-rh);
@@ -124,9 +124,11 @@ for (int i = 0; i < roomsn && room[i]; i++)
 
 void wine_disp(void){
 blood_red();
-for (int i = 0; i < roomh[plroom]; i++){
-	blood_cumo(roomy[plroom]+i, roomx[plroom]);
-	printf("%ls\n", room[plroom][i]);}
+for (int j = 0; j < roomsn; j++){
+	if (rlvl[j] != pllvl) continue;
+	for (int i = 0; i < roomh[j]; i++){
+		blood_cumo(roomy[j]+i, roomx[j]);
+		printf("%ls\n", room[j][i]);}}
 blood_cumo(roomy[plroom]+ply, roomx[plroom]+plx); printf("%c\n", '@');}
 
 void wine_plmov(int c){
