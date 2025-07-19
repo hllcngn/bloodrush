@@ -1,7 +1,17 @@
 #include <unistd.h>
 #include <stdlib.h>
+#include <time.h>
 #include <ncurses.h>
 #include <term.h>
+// dungeon defines
+#define LVLH 20
+#define LVLW 60
+#define LVLSN 5
+#define ROOMSN 20
+#define RMAXH 10
+#define RMAXW 20
+#define RMINH 5
+#define RMINW 8
 // prototypes
 void set_cap(const char *str, ...);
 void wine_init(void);
@@ -16,10 +26,13 @@ void blood_cumo(int y, int x);
 void blood_red(void);
 
 // dungeon
+int lvlsn;
 int roomsn;
 int ***room;
 int *roomh;
 int *roomw;
+int *roomy;
+int *roomx;
 int *rlvl;
 
 // player
@@ -29,6 +42,7 @@ int ply, plx;
 
 // === MAIN ===
 int main(int ac, char **av){
+srand(time(NULL));
 wine_init();
 blood_init();
 
@@ -52,15 +66,19 @@ return 0;}
 
 // === WINE ===
 void wine_init(void){
-roomsn = 10;
+lvlsn = LVLSN;
+roomsn = ROOMSN;
 rlvl = malloc(sizeof(int)*roomsn);
 roomh = malloc(sizeof(int)*roomsn);
 roomw = malloc(sizeof(int)*roomsn);
+roomy = malloc(sizeof(int)*roomsn);
+roomx = malloc(sizeof(int)*roomsn);
 room = malloc(sizeof(int**)*roomsn);
 for (int i = 0; i < roomsn; i++)
 	wine_make_room(i);
 plroom = 0;
-ply = 5; plx = 5;}
+ply = rand()%(roomh[plroom]-2)+1;
+plx = rand()%(roomw[plroom]-2)+1;}
 
 void wine_end(void){
 for (int i = 0; i < roomsn; i++){
@@ -71,9 +89,15 @@ free(room);
 free(roomh); free(roomw); free(rlvl);}
 
 void wine_make_room(int l){
-rlvl[l] = 0;
-int rh = 10; int rw = 20;
+//do {
+	rlvl[l] = rand()%lvlsn;
+int rh = rand()%(RMAXH-RMINH)+RMINH;
+int rw = rand()%(RMAXW-RMINW)+RMINW;
+int ry = rand()%(LVLH-rh);
+int rx = rand()%(LVLW-rw);
+//} while (wine_room_ok(rlvl[l], rh, rw));
 roomh[l] = rh; roomw[l] = rw;
+roomy[l] = ry; roomx[l] = rx;
 room[l] = malloc(sizeof(int*)*rh);
 int **new = room[l];
 for (int i = 0; i < rh; i++){
@@ -90,13 +114,20 @@ for (int i = 1; i < rh-1; i++){
 	for (int j = 1; j < rw-1; j++)
 		new[i][j] = '.';}}
 
+/*
+void wine_room_ok(int lvl, int rh, int rw){
+for (int i = 0; i < roomsn && room[i]; i++)
+	if (rlvl[i] == lvl)
+		if (
+}
+*/
+
 void wine_disp(void){
 blood_red();
-blood_cumo(0, 0);
 for (int i = 0; i < roomh[plroom]; i++){
+	blood_cumo(roomy[plroom]+i, roomx[plroom]);
 	printf("%ls\n", room[plroom][i]);}
-blood_cumo(ply, plx);
-printf("%c\n", '@');}
+blood_cumo(roomy[plroom]+ply, roomx[plroom]+plx); printf("%c\n", '@');}
 
 void wine_plmov(int c){
 switch(c){
