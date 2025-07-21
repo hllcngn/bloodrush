@@ -1,44 +1,17 @@
-#include <unistd.h>
-#include <stdlib.h>
-#include <time.h>
-#include <ncurses.h>
-#include <term.h>
-// dungeon defines
-#define LVLH 20
-#define LVLW 60
-#define LVLSN 5
-#define ROOMSN 20
-#define RMAXH 10
-#define RMAXW 20
-#define RMINH 5
-#define RMINW 8
-#define MOBN 30
-// prototypes
-void wine_init(void);
-void wine_end(void);
-void wine_make_room(int l);
-int  wine_room_ok(int lvl, int rh, int rw, int ry, int rx);
-int  wine_where(int lvl, int y, int x);
-void wine_make_corr(void);
-void wine_make_mobs(void);
-void wine_disp(void);
-void wine_plmov(int c);
-void blood_init(void);
-void blood_end(void);
-void blood_set_cap(const char *str, ...);
-void blood_clr(void);
-void blood_curmov(int y, int x);
-void blood_red(void);
+#include "include.h"
 
+// global variables
 // dungeon
 int lvlsn;
 int roomsn;
 int ***room;
 int *roomlvl;
 int *roomh, *roomw, *roomy, *roomx;
+
 // player
 int pllvl, plroom;
 int ply, plx;
+
 // mobs
 int *moblvl, *mobroom;
 int *moby, *mobx;
@@ -72,18 +45,18 @@ return 0;}
 void wine_init(void){
 //initializations
 lvlsn = LVLSN;
-roomsn = ROOMSN;
 //allocations
-roomlvl= malloc(sizeof(int)*roomsn);
-roomh  = malloc(sizeof(int)*roomsn);
-roomw  = malloc(sizeof(int)*roomsn);
-roomy  = malloc(sizeof(int)*roomsn);
-roomx  = malloc(sizeof(int)*roomsn);
-room   = malloc(sizeof(int**)*roomsn);
+//TODO dynamically realloc components
+//or, it's just ints - I can have those just large
+roomlvl= malloc(sizeof(int)*ROOMSN);
+roomh  = malloc(sizeof(int)*ROOMSN);
+roomw  = malloc(sizeof(int)*ROOMSN);
+roomy  = malloc(sizeof(int)*ROOMSN);
+roomx  = malloc(sizeof(int)*ROOMSN);
+room   = malloc(sizeof(int**)*ROOMSN);
 //making dungeon
-for (int i = 0; i < roomsn; i++)
-	wine_make_room(i);
-wine_make_corr();
+roomsn = 0;
+nethacklike_make_lvl(0);
 wine_make_mobs();
 //creating player
 plroom = 0;//TODO do sth if there aren't any rooms on lvl0
@@ -103,56 +76,6 @@ free(roomh); free(roomw); free(roomy); free(roomx);
 free(moblvl); free(mobroom); free(moby); free(mobx);
 }
 
-void wine_make_room(int l){
-//finding suitable random parameters
-int rh, rw, ry, rx, try = 0;
-do { try++;
-roomlvl[l] = rand()%lvlsn;
-rh = rand()%(RMAXH-RMINH)+RMINH;
-rw = rand()%(RMAXW-RMINW)+RMINW;
-ry = rand()%(LVLH-rh);
-rx = rand()%(LVLW-rw);
-} while (!wine_room_ok(roomlvl[l], rh, rw, ry, rx)
-	&& try < 200);
-//initializations & allocations
-roomh[l] = rh; roomw[l] = rw;
-roomy[l] = ry; roomx[l] = rx;
-room[l] = malloc(sizeof(int*)*rh);
-int **new = room[l];
-for (int i = 0; i < rh; i++){
-	new[i] = malloc(sizeof(int)*rw+1);}
-//top & bottom rows
-new[0][rw] = '\0';
-new[rh-1][rw] = '\0';
-for (int i = 0; i < rw; i++){
-	new[0][i] = '-';
-	new[rh-1][i] = '-';}
-//rest of the rows
-for (int i = 1; i < rh-1; i++){
-	new[i][0] = '|';
-	new[i][rw-1] = '|';
-	new[i][rw] = '\0';
-	for (int j = 1; j < rw-1; j++)
-		new[i][j] = '.';}
-}
-
-int wine_room_ok(int lvl, int rh, int rw, int ry, int rx){
-for (int i = 0; i < roomsn; i++){
-	if (roomlvl[i] != lvl) continue;
-	//checking corners
-	if (wine_where(lvl, ry,    rx)    != -1
-	 || wine_where(lvl, ry,    rx+rw) != -1
-	 || wine_where(lvl, ry+rh, rx)    != -1
-	 || wine_where(lvl, ry+rh, rx+rw) != -1) return 0;
-	//checking overlap
-	if (((ry < roomy[i]          && ry+rh > roomy[i])
-	  || (ry < roomy[i]+roomh[i] && ry+rh > roomy[i]+roomh[i]))
-	 && ((rx < roomx[i]          && rx+rw > roomx[i])
-	  || (rx < roomx[i]+roomw[i] && rx+rw > roomx[i]+roomw[i])))
-		return 0;}//TODO some rooms still overlap
-return 1;
-}
-
 int wine_where(int lvl, int y, int x){
 for (int i = 0; i < roomsn; i++)
 	if (roomlvl[i] == lvl)
@@ -160,10 +83,6 @@ for (int i = 0; i < roomsn; i++)
 		 && x >= roomx[i] && x <= roomx[i]+roomw[i])
 			return i;
 return -1;
-}
-
-void wine_make_corr(void){
-
 }
 
 void wine_make_mobs(void){
@@ -174,8 +93,8 @@ mobx   = malloc(sizeof(int)*MOBN);
 for (int i = 0; i < MOBN; i++){
 	mobroom[i] = rand()%roomsn;
 	moblvl[i] = roomlvl[mobroom[i]];
-	moby[i] = rand()%roomh[mobroom[i]];
-	mobx[i] = rand()%roomw[mobroom[i]];}
+	moby[i] = rand()%(roomh[mobroom[i]]-2)+1;
+	mobx[i] = rand()%(roomw[mobroom[i]]-2)+1;}
 }
 
 void wine_disp(void){
@@ -193,9 +112,9 @@ blood_curmov(roomy[plroom]+ply, roomx[plroom]+plx);
 printf("%c\n", '@');
 // draw mobs
 for (int i = 0; i < MOBN; i++){
-	//if (moblvl[i] == pllvl){
-	blood_curmov(roomy[mobroom[i]]+moby[i], roomx[mobroom[i]]+mobx[i]);
-	printf("%c\n", 'G');}
+	if (moblvl[i] == pllvl){
+		blood_curmov(roomy[mobroom[i]]+moby[i], roomx[mobroom[i]]+mobx[i]);
+		printf("%c\n", 'G');}}
 }
 
 void wine_plmov(int c){

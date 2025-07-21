@@ -1,0 +1,67 @@
+#ifndef INCLUDE_H
+#define INCLUDE_H
+
+#include <unistd.h>
+#include <stdlib.h>
+#include <time.h>
+#include <ncurses.h>
+#include <term.h>
+
+
+// dungeon defines
+#define LVLH 20
+#define LVLW 60
+#define LVLSN 5
+#define ROOMSN 20
+#define MOBN 30
+
+//nethacklike generation
+#define NHL_MAXROOMN 5
+#define RMAXH 10
+#define RMAXW 20
+#define RMINH 5
+#define RMINW 8
+
+//masion generation
+
+
+// global variables
+// dungeon
+extern int lvlsn;
+extern int roomsn;
+extern int ***room;
+extern int *roomlvl;
+extern int *roomh, *roomw, *roomy, *roomx;
+
+// player
+extern int pllvl, plroom;
+extern int ply, plx;
+
+// mobs
+extern int *moblvl, *mobroom;
+extern int *moby, *mobx;
+
+
+// prototypes
+//main.c
+void wine_init(void);
+void wine_end(void);
+int  wine_where(int lvl, int y, int x);
+void wine_make_mobs(void);
+void wine_disp(void);
+void wine_plmov(int c);
+
+void blood_init(void);
+void blood_end(void);
+void blood_set_cap(const char *str, ...);
+void blood_clr(void);
+void blood_curmov(int y, int x);
+void blood_red(void);
+
+//dungen-nethacklike.c
+void  nethacklike_make_lvl(int lvl);
+void nethacklike_make_room(int lvl, int l);
+int  nethacklike_room_ok(int lvl, int rh, int rw, int ry, int rx);
+void nethacklike_make_corr(void);
+
+#endif

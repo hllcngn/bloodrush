@@ -1,2 +1,3 @@
 all:
-	gcc main.c -lncurses -o bloodrush
+	gcc main.c \
+	    dungen-nethacklike.c	-I. -lncurses -o bloodrush
