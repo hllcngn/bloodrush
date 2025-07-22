@@ -7,7 +7,7 @@
 #include <ncurses.h>
 #include <term.h>
 
-#define TRYN 100
+#define TRYN 200
 #define LARGEVALUE 1000
 
 // dungeon defines
@@ -25,12 +25,14 @@
 #define RMINW 8
 
 //masion generation
+#define MAN_MAXROOMN 30
 
 
 typedef struct{
 	int distance;
 	int direction;
-	int axis;}segment;
+	int axis;
+	int room;}segment;
 
 // global variables
 // dungeon

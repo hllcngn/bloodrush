@@ -30,8 +30,7 @@ roomsn++;
 }
 
 void make_empty_room(int l){
-int rh = roomh[l];
-int rw = roomw[l];
+int rh = roomh[l], rw = roomw[l];
 room[l] = malloc(sizeof(int*)*rh);
 int **new = room[l];
 for (int i = 0; i < rh; i++){
