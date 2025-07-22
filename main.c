@@ -46,8 +46,6 @@ void wine_init(void){
 //initializations
 lvlsn = LVLSN;
 //allocations
-//TODO dynamically realloc components
-//or, it's just ints - I can have those just large
 roomlvl= malloc(sizeof(int)*ROOMSN);
 roomh  = malloc(sizeof(int)*ROOMSN);
 roomw  = malloc(sizeof(int)*ROOMSN);
@@ -56,12 +54,11 @@ roomx  = malloc(sizeof(int)*ROOMSN);
 room   = malloc(sizeof(int**)*ROOMSN);
 //making dungeon
 roomsn = 0;
-nethacklike_make_lvl(0);
+//nethacklike_make_lvl(0);
+mansion_make_lvl(0);
 wine_make_mobs();
 //creating player
-plroom = 0;//TODO do sth if there aren't any rooms on lvl0
-for (int i = 0; i < roomsn; i++)
-	if (roomlvl[i] == 0){ plroom = i; break; }
+plroom = 0;
 ply = rand()%(roomh[plroom]-2)+1;
 plx = rand()%(roomw[plroom]-2)+1;
 }
@@ -113,7 +110,8 @@ printf("%c\n", '@');
 // draw mobs
 for (int i = 0; i < MOBN; i++){
 	if (moblvl[i] == pllvl){
-		blood_curmov(roomy[mobroom[i]]+moby[i], roomx[mobroom[i]]+mobx[i]);
+		blood_curmov(roomy[mobroom[i]]+moby[i],
+			     roomx[mobroom[i]]+mobx[i]);
 		printf("%c\n", 'G');}}
 }
 

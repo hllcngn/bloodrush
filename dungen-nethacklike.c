@@ -6,25 +6,32 @@
 
 void nethacklike_make_lvl(int lvl){
 int lvlroomsn = rand()%NHL_MAXROOMN + 1;
-for (int i = 0; i < lvlroomsn; i++){
-	nethacklike_make_room(lvl, roomsn);
-	roomsn++;}
+for (int i = 0; i < lvlroomsn; i++)
+	nethacklike_make_room(lvl);
 nethacklike_make_corr();}
 
-void nethacklike_make_room(int lvl, int l){
+void nethacklike_make_room(int lvl){
 //finding suitable random parameters
 int rh, rw, ry, rx, try = 0;
-do { try++;
+int l = roomsn;
 roomlvl[l] = lvl;
+do { try++;
 rh = rand()%(RMAXH-RMINH)+RMINH;
 rw = rand()%(RMAXW-RMINW)+RMINW;
 ry = rand()%(LVLH-rh);
 rx = rand()%(LVLW-rw);
 } while (!nethacklike_room_ok(lvl, rh, rw, ry, rx)
-	&& try < 200);
+	&& try < TRYN);
 //initializations & allocations
 roomh[l] = rh; roomw[l] = rw;
 roomy[l] = ry; roomx[l] = rx;
+make_empty_room(l);
+roomsn++;
+}
+
+void make_empty_room(int l){
+int rh = roomh[l];
+int rw = roomw[l];
 room[l] = malloc(sizeof(int*)*rh);
 int **new = room[l];
 for (int i = 0; i < rh; i++){

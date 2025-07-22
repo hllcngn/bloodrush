@@ -7,12 +7,14 @@
 #include <ncurses.h>
 #include <term.h>
 
+#define TRYN 100
+#define LARGEVALUE 1000
 
 // dungeon defines
 #define LVLH 20
 #define LVLW 60
 #define LVLSN 5
-#define ROOMSN 20
+#define ROOMSN 100
 #define MOBN 30
 
 //nethacklike generation
@@ -24,6 +26,11 @@
 
 //masion generation
 
+
+typedef struct{
+	int distance;
+	int direction;
+	int axis;}segment;
 
 // global variables
 // dungeon
@@ -60,8 +67,15 @@ void blood_red(void);
 
 //dungen-nethacklike.c
 void  nethacklike_make_lvl(int lvl);
-void nethacklike_make_room(int lvl, int l);
+void nethacklike_make_room(int lvl);
 int  nethacklike_room_ok(int lvl, int rh, int rw, int ry, int rx);
 void nethacklike_make_corr(void);
+void make_empty_room(int l);
+
+//dungen-mansion.c
+void mansion_make_lvl(int lvl);
+void mansion_make_room(int lvl);
+segment get_closest_room(int lvl, int y, int x);
+segment get_distance(int p1, int p2);
 
 #endif
