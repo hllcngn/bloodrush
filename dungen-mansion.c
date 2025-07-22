@@ -5,7 +5,7 @@
 // === MANSION LVL GEN ===
 
 void mansion_make_lvl(int lvl){
-int lvlroomsn = 2;//rand()%MAN_MAXROOMN + 1;
+int lvlroomsn = 3;// rand()%MAN_MAXROOMN + 1;
 nethacklike_make_room(lvl);
 for (int i = 0; i < lvlroomsn-1; i++)
 	mansion_make_room(lvl);
@@ -20,6 +20,7 @@ rx = rand()%(LVLW-RMINW);
 } while ((wine_where(lvl, ry, rx) != -1
 	|| get_closest_room(lvl, ry, rx).distance <= 3)
 	&& try < TRYN);
+
 if (try < TRYN){
 printf("room position: ry=%d, rx=%d\n", ry, rx);
 	roomy[l] = ry; roomx[l] = rx;
@@ -30,19 +31,22 @@ printf("direction: %d\n", seg.direction);
 	if (seg.axis == 'y'){
 		roomh[l] = seg.distance;
 		if (seg.direction == -1)
-			roomy[l] -= seg.distance-1;
+			move_room_several(seg.distance-1, l, 'y', -1);
+			//roomy[l] -= seg.distance-1;
 		roomw[l] = rand()%(RMAXW-RMINW)+RMINW;
 		segment segx = get_distance(rx, roomx[seg.room]);
 		if (segx.direction == -1){
-			roomx[l] -= segx.distance-(roomw[seg.room]);
+			move_room_several(segx.distance-roomw[seg.room],
+					l, 'x', -1);
+			//roomx[l] -= segx.distance-roomw[seg.room];
 			if (roomy[l]==roomy[seg.room]+roomh[seg.room]-1
 			 || roomy[l]+roomh[l]-1==roomy[seg.room])
 				roomx[l] -= 2;}
 		else{	roomx[l] += segx.distance-(roomw[l]);
 			if (roomy[l]==roomy[seg.room]+roomh[seg.room]-1
 			 || roomy[l]+roomh[l]-1==roomy[seg.room])
-				roomx[l] += 2;}
-	}
+				roomx[l] += 2;}}
+
 	else{	roomw[l] = seg.distance;
 		if (seg.direction == -1)
 			roomx[l] -= seg.distance-1;
@@ -56,8 +60,8 @@ printf("direction: %d\n", seg.direction);
 		else{	roomy[l] += segy.distance-(roomh[l]);
 			if (roomx[l]==roomx[seg.room]+roomw[seg.room]-1
 			 || roomx[l]+roomw[l]-1==roomx[seg.room])
-				roomy[l] += 2;}
-	}
+				roomy[l] += 2;}}
+
 printf("room dimensions: rh=%d, rw=%d\n", roomh[l], roomw[l]);
 printf("final room position: ry=%d, rx=%d\n", roomy[l], roomx[l]);
 	make_empty_room(l);
@@ -88,3 +92,40 @@ seg.distance = p1 > p2 ? p1 - p2 : p2 - p1;
 seg.distance++;
 seg.direction = p1 > p2 ? -1 : 1;
 return seg;}
+
+int move_room_several(int n, int l, int axis, int direction){
+while (n > 0 && move_room(l, axis, direction)!=0) n--;}
+
+int move_room(int l, int axis, int direction){
+int i = 0;
+if (axis == 'y'){
+	if (direction == -1){
+		while ((i = wine_where_next(i, roomlvl[l],
+				roomy[l]-1, roomx[l])) != -1)
+			if (roomy[l]-1 == roomy[i]+roomh[i]-1)
+				continue;
+			else return 0;
+		roomy[l]--; return 1;}
+	else{	while ((i = wine_where_next(i, roomlvl[l],
+				roomy[l]+1, roomx[l])) != -1)
+			if (roomy[l]+1 == roomy[i])
+				continue;
+			else return 0;
+		roomy[l]++; return 1;}
+}else{	if (direction == -1){
+		while ((i = wine_where_next(i, roomlvl[l],
+				roomy[l], roomx[l]-1)) != -1)
+			if (roomx[l]-1 == roomx[i]+roomw[i]-1)
+				continue;
+			else return 0;
+		roomx[l]--; return 1;}
+	else{	while ((i = wine_where_next(i, roomlvl[l],
+				roomy[l], roomx[l]+1)) != -1)
+			if (roomx[l]+1 == roomx[i])
+				continue;
+			else return 0;
+		roomx[l]++; return 1;}}}
+
+int expand_room(int l, int axis, int direction){
+
+}

@@ -56,6 +56,7 @@ extern int *moby, *mobx;
 void wine_init(void);
 void wine_end(void);
 int  wine_where(int lvl, int y, int x);
+int wine_where_next(int j, int lvl, int y, int x);
 void wine_make_mobs(void);
 void wine_disp(void);
 void wine_plmov(int c);
@@ -79,5 +80,8 @@ void mansion_make_lvl(int lvl);
 void mansion_make_room(int lvl);
 segment get_closest_room(int lvl, int y, int x);
 segment get_distance(int p1, int p2);
+int move_room_several(int n, int l, int axis, int direction);
+int move_room(int l, int axis, int direction);
+int expand_room(int l, int axis, int direction);
 
 #endif

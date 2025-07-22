@@ -82,6 +82,15 @@ for (int i = 0; i < roomsn; i++)
 return -1;
 }
 
+int wine_where_next(int j, int lvl, int y, int x){
+for (int i = j; i < roomsn; i++)
+	if (roomlvl[i] == lvl)
+		if (y >= roomy[i] && y <= roomy[i]+roomh[i]
+		 && x >= roomx[i] && x <= roomx[i]+roomw[i])
+			return i;
+return -1;
+}
+
 void wine_make_mobs(void){
 moblvl = malloc(sizeof(int)*MOBN);
 mobroom= malloc(sizeof(int)*MOBN);
