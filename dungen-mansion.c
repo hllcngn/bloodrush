@@ -18,7 +18,7 @@ do { try++;
 ry = rand()%(LVLH-RMINH);
 rx = rand()%(LVLW-RMINW);
 } while ((wine_where(lvl, ry, rx) != -1
-	|| get_closest_room(lvl, ry, rx).distance <= 2)
+	|| get_closest_room(lvl, ry, rx).distance <= 3)
 	&& try < TRYN);
 if (try < TRYN){
 printf("room position: ry=%d, rx=%d\n", ry, rx);
@@ -30,27 +30,33 @@ printf("direction: %d\n", seg.direction);
 	if (seg.axis == 'y'){
 		roomh[l] = seg.distance;
 		if (seg.direction == -1)
-			roomy[l] -= seg.distance;
+			roomy[l] -= seg.distance-1;
 		roomw[l] = rand()%(RMAXW-RMINW)+RMINW;
 		segment segx = get_distance(rx, roomx[seg.room]);
-		if (segx.direction == -1)
-			roomx[l] -= segx.distance-(roomw[seg.room]-2) < 0 ? 0
-				: segx.distance-(roomw[seg.room]-2);
-		else	roomx[l] += segx.distance-(roomw[l]-2) < 0 ? 0
-				: segx.distance-(roomw[l]-2);
-		//roomx[l] = roomx[seg.room];
+		if (segx.direction == -1){
+			roomx[l] -= segx.distance-(roomw[seg.room]);
+			if (roomy[l]==roomy[seg.room]+roomh[seg.room]-1
+			 || roomy[l]+roomh[l]-1==roomy[seg.room])
+				roomx[l] -= 2;}
+		else{	roomx[l] += segx.distance-(roomw[l]);
+			if (roomy[l]==roomy[seg.room]+roomh[seg.room]-1
+			 || roomy[l]+roomh[l]-1==roomy[seg.room])
+				roomx[l] += 2;}
 	}
 	else{	roomw[l] = seg.distance;
 		if (seg.direction == -1)
-			roomx[l] -= seg.distance;
+			roomx[l] -= seg.distance-1;
 		roomh[l] = rand()%(RMAXH-RMINH)+RMINH;
 		segment segy = get_distance(ry, roomy[seg.room]);
-		if (segy.direction == -1)
-			roomy[l] -= segy.distance-(roomh[seg.room]-2) < 0 ? 0
-				: segy.distance-(roomh[seg.room]-2);
-		else	roomy[l] += segy.distance-(roomh[l]-2) < 0 ? 0
-				: segy.distance-(roomh[l]-2);
-		//roomy[l] = roomy[seg.room];
+		if (segy.direction == -1){
+			roomy[l] -= segy.distance-(roomh[seg.room]);
+			if (roomx[l]==roomx[seg.room]+roomw[seg.room]-1
+			 || roomx[l]+roomw[l]-1==roomx[seg.room])
+				roomy[l] -= 2;}
+		else{	roomy[l] += segy.distance-(roomh[l]);
+			if (roomx[l]==roomx[seg.room]+roomw[seg.room]-1
+			 || roomx[l]+roomw[l]-1==roomx[seg.room])
+				roomy[l] += 2;}
 	}
 printf("room dimensions: rh=%d, rw=%d\n", roomh[l], roomw[l]);
 printf("final room position: ry=%d, rx=%d\n", roomy[l], roomx[l]);
