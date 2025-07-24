@@ -11,8 +11,8 @@
 #define LARGEVALUE 1000
 
 // dungeon defines
-#define LVLH 20
-#define LVLW 60
+#define LVLH 13//20
+#define LVLW 35//60
 #define LVLSN 5
 #define ROOMSN 100
 #define MOBN 30
@@ -69,7 +69,7 @@ void blood_curmov(int y, int x);
 void blood_red(void);
 
 //dungen-nethacklike.c
-void  nethacklike_make_lvl(int lvl);
+void nethacklike_make_lvl(int lvl);
 void nethacklike_make_room(int lvl);
 int  nethacklike_room_ok(int lvl, int rh, int rw, int ry, int rx);
 void nethacklike_make_corr(void);
@@ -83,5 +83,6 @@ segment get_distance(int p1, int p2);
 int move_room_several(int n, int l, int axis, int direction);
 int move_room(int l, int axis, int direction);
 int expand_room(int l, int axis, int direction);
+void mansion_make_doorway(int lvl);
 
 #endif
