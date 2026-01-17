@@ -25,14 +25,14 @@ srand(time(NULL));
 wine_init();
 blood_init();
 int q = 1; while (q){// game loop
-wine_disp();
-char c; read(0, &c, 1);
-switch(c){
-case 27: q = 0; break;
-case 'w':
-case 'a':
-case 's':
-case 'd': wine_plmov(c); break;}
+	wine_disp();
+	char c; read(0, &c, 1);
+	switch(c){
+	case 27: q = 0; break;
+	case 'w':
+	case 'a':
+	case 's':
+	case 'd': wine_plmov(c); break;}
 }		// game loop end
 blood_end();
 wine_end();
@@ -54,8 +54,8 @@ roomx  = malloc(sizeof(int)*ROOMSN);
 room   = malloc(sizeof(int**)*ROOMSN);
 //making dungeon
 roomsn = 0;
-//nethacklike_make_lvl(0);
-mansion_make_lvl(0);
+nethacklike_make_lvl(0);
+//mansion_make_lvl(0);
 wine_make_mobs();
 //creating player
 plroom = 0;

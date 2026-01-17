@@ -12,6 +12,7 @@ for (int i = 0; i < lvlroomsn-1; i++)
 mansion_make_doorway(lvl);
 }
 
+
 void mansion_make_room(int lvl){
 int ry, rx, try = 0, l = roomsn;
 roomlvl[l] = lvl;
@@ -69,6 +70,7 @@ if (try < TRYN){
 	roomsn++;}
 }
 
+
 segment get_closest_room(int lvl, int y, int x){
 segment segy, segx;
 segy.distance = segx.distance = LARGEVALUE;
@@ -87,12 +89,14 @@ segy.axis = 'y';
 return segy;
 }
 
+
 segment get_distance(int p1, int p2){
 segment seg;
 seg.distance = p1 > p2 ? p1 - p2 : p2 - p1;
 seg.distance++;
 seg.direction = p1 > p2 ? -1 : 1;
 return seg;}
+
 
 int move_room_several(int n, int l, int axis, int direction){
 while (n > 0 && move_room(l, axis, direction)!=0) n--;}
@@ -127,6 +131,7 @@ int expand_room(int l, int axis, int direction){
 
 }
 
+
 void mansion_make_doorway(int lvl){
 int room1 = -1;
 while (room1 < roomsn-2){
@@ -136,17 +141,14 @@ while (room1 < roomsn-2){
 	for (int i = room1; i < roomsn; i++){
 		if (roomlvl[i] != lvl) continue;
 		else if (roomy[i]+roomh[i]-1 == roomy[room1]){
-			printf("coucou\n");
+			//printf("coucou\n");
 			if (roomx[i] <= roomx[room1]){
 				int r = rand()%(roomw[i]-(roomx[room1]-roomx[i])-2)+1;
 				room[room1][0][r] = 'Z';
-				room[i][roomh[i]-1][roomx[room1]-roomx[i]+r] = 'Z';
-			}
+				room[i][roomh[i]-1][roomx[room1]-roomx[i]+r] = 'Z';}
 			else{	int r = rand()%(roomw[i]-(roomx[i]-roomx[room1])-2)+1;
 				room[room1][0][r+roomx[room1]-roomx[i]] = 'Z';
-				room[i][roomh[i]-1][r] = 'Z';
-			}
-		}
+				room[i][roomh[i]-1][r] = 'Z';}}
 	//	else if (roomy[i] == roomy[room1]+roomh[room1])
 	}
 }

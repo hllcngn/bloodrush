@@ -5,7 +5,7 @@
 // === NETHACK-LIKE LVL GEN ===
 
 void nethacklike_make_lvl(int lvl){
-int lvlroomsn = rand()%NHL_MAXROOMN + 1;
+int lvlroomsn = NHL_MINROOMN+rand()%(NHL_MAXROOMN+1-NHL_MINROOMN);
 for (int i = 0; i < lvlroomsn; i++)
 	nethacklike_make_room(lvl);
 nethacklike_make_corr();}

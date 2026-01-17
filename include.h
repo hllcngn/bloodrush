@@ -1,24 +1,24 @@
-#ifndef INCLUDE_H
-#define INCLUDE_H
-
+#pragma once
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
 #include <ncurses.h>
 #include <term.h>
+#include <termios.h>
 
 #define TRYN 200
 #define LARGEVALUE 1000
 
 // dungeon defines
-#define LVLH 13//20
-#define LVLW 35//60
+#define LVLH 20//13
+#define LVLW 60//35
 #define LVLSN 5
 #define ROOMSN 100
 #define MOBN 30
 
 //nethacklike generation
 #define NHL_MAXROOMN 5
+#define NHL_MINROOMN 3
 #define RMAXH 10
 #define RMAXW 20
 #define RMINH 5
@@ -85,4 +85,5 @@ int move_room(int l, int axis, int direction);
 int expand_room(int l, int axis, int direction);
 void mansion_make_doorway(int lvl);
 
-#endif
+
+// by hllcngn
